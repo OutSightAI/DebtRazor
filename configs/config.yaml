@@ -1,0 +1,33 @@
+# Enter the directory path for the project you want to migrate and the output directory path
+# entry_path: "/home/rohan/Home/grocerry_app"
+# output_path: "/home/rohan/Home/grocerry_app.gpt"
+
+entry_path: "/home/rohan/Home/grocerry_app"
+output_path: "/home/rohan/Home/grocerry_app.gpt"
+
+legacy_language: python
+legacy_framework: flask
+
+new_language: rust
+new_framework: actix web
+
+langchain_tracing: false
+langchain_verbose: false
+
+project_name: "grocerry_app"
+
+thread_id: 0001 # unique identifier for the project you are migrating. Should be replaced with project id from user in production
+
+document: 
+  model: 
+    name: gpt-4o
+
+planner: 
+  model: 
+    name: gpt-4o
+  rerun: true
+
+migrate: 
+  model: 
+    name: gpt-4o
+
