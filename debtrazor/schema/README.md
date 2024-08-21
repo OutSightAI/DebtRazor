@@ -24,13 +24,6 @@ Welcome to the `schema` directory! This directory contains various Pydantic mode
   - `root`: A string representing the root of the dependency tree.
 - **Internal Dependencies**: None
 
-## Getting Started
-
-1. **Understanding the Models**: Start by looking at `model.py` to understand the basic Pydantic model used in this directory.
-2. **Request Handling**: Move on to `request.py` to see how requests and parameters are structured and validated.
-3. **Dependency Management**: Check out `tree.py` to understand how dependencies are represented and outputted in JSON format.
-4. **Initialization**: Note that `__init__.py` is currently empty and does not require any attention.
-
 ## Contributing
 
 When adding new files or modifying existing ones, please ensure that:
