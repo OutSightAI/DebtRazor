@@ -1,7 +1,7 @@
 import os
 import fnmatch
 import re
-from gpt_migrate.utils.logging import logging
+from debtrazor.utils.logging import logging
 
 
 def read_gitignore(path):

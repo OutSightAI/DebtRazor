@@ -1,6 +1,6 @@
 import os
 from langchain_core.tools import tool
-from gpt_migrate.schema.tree import DependencyTree
+from debtrazor.schema.tree import DependencyTree
 
 
 @tool

@@ -1,17 +1,17 @@
 import os
 import json
-from gpt_migrate.agents.agent import Agent
+from debtrazor.agents.agent import Agent
 from langgraph.graph import StateGraph, END
-from gpt_migrate.agents.doc_agent.state import DocAgentState
-from gpt_migrate.utils.util import is_ignored, parse_code_string, get_relative_path
-from gpt_migrate.agents.doc_agent.prompts import (
+from debtrazor.agents.doc_agent.state import DocAgentState
+from debtrazor.utils.util import is_ignored, parse_code_string, get_relative_path
+from debtrazor.agents.doc_agent.prompts import (
     PROMPT,
     PROMPT_SUMMARY,
     PROMPT_README,
     PROMPT_DEPENDENCY_TREE,
 )
-from gpt_migrate.tools.utils import execute_tool
-from gpt_migrate.utils.logging import logger, add_to_log_queue
+from debtrazor.tools.utils import execute_tool
+from debtrazor.utils.logging import logger, add_to_log_queue
 
 
 class DocAgent(Agent):
@@ -75,7 +75,7 @@ class DocAgent(Agent):
         )
         logger.info("Conditional Edges: directory_processor")
         # compiling graph
-        self.graph = graph.compile(checkpointer=checkpointer)
+        self.graph = graph.compile(checkpointer=checkpointer.__enter__())
 
     def __call__(self, state: DocAgentState):
         return self.graph.stream(state, config=self.config)
@@ -255,6 +255,8 @@ class DocAgent(Agent):
                     ),
                 }
             )
+            
+            # from pdb import set_trace; set_trace()
 
             if hasattr(dependency_tree, "dependencies"):
                 if (
@@ -291,6 +293,11 @@ class DocAgent(Agent):
 
     def readme_creator_node(self, state: DocAgentState):
         logger.info("on node: readme_creator_node")
+
+        # Ensure items_to_process is initialized to an empty list if it's None
+        if state["items_to_process"] is None:
+            state["items_to_process"] = []
+
         # Pop the last directory from the stack
         directory_path = state["directory_stack"].pop(-1)["path"]
 
@@ -332,6 +339,7 @@ class DocAgent(Agent):
             if message.additional_kwargs["directory_path"] != directory_path
         ]
 
+
         # Add the README.md path and content to the messages
         if len(state["directory_stack"]) > 0:
             readme.additional_kwargs["directory_path"] = state["directory_stack"][-1][
@@ -341,6 +349,8 @@ class DocAgent(Agent):
         else:
             readme.additional_kwargs["directory_path"] = state["entry_path"]
             readme.additional_kwargs["file_name"] = "README.md"
+
+        # from pdb import set_trace; set_trace()
 
         if len(state["items_to_process"]) == 0:
             state["directory_structure"] += state["indent"] + "└── README.md\n"

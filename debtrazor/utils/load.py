@@ -3,9 +3,9 @@ import asyncio
 import argparse
 
 from typing import Any
-from gpt_migrate.utils.cfg import Config
-from gpt_migrate.schema.request import AgentRequest
-from gpt_migrate.utils.logging import add_to_log_queue
+from debtrazor.utils.cfg import Config
+from debtrazor.schema.request import AgentRequest
+from debtrazor.utils.logging import add_to_log_queue
 
 
 def load_config(config_path: str) -> dict[str, Any]:

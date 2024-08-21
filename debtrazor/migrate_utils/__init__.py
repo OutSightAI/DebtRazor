@@ -1,9 +1,9 @@
-from gpt_migrate.migrate_utils.setup import (
+from debtrazor.migrate_utils.setup import (
     setup_environment,
     setup_memory,
     setup_initial_state,
 )
-from gpt_migrate.migrate_utils.run_doc_agent import run_documentation_agent
+from debtrazor.migrate_utils.run_doc_agent import run_documentation_agent
 
 __all__ = [
     "setup_environment",

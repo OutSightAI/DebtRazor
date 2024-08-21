@@ -1,0 +1,9 @@
+langchain
+langgraph
+langchain-community
+langchain-openai
+openai
+python-dotenv
+langgraph-checkpoint-sqlite
+aiosqlite
+import_deps

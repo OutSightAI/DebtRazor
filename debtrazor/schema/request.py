@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
-from gpt_migrate.schema.model import Model
+from debtrazor.schema.model import Model
 
 
 class AgentParams(BaseModel):

@@ -1,9 +1,9 @@
 import asyncio
-from gpt_migrate.migrate_utils.llm import get_llm
-from gpt_migrate.utils.logging import add_to_log_queue, logger
-from gpt_migrate.agents.doc_agent.agent import DocAgent
-from gpt_migrate.tools.tree.node_js import madge
-from gpt_migrate.tools.tree.python import pydeps
+from debtrazor.migrate_utils.llm import get_llm
+from debtrazor.utils.logging import add_to_log_queue, logger
+from debtrazor.agents.doc_agent.agent import DocAgent
+from debtrazor.tools.tree.node_js import madge
+from debtrazor.tools.tree.python import pydeps
 
 
 async def run_documentation_agent(

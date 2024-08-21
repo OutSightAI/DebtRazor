@@ -1,9 +1,9 @@
 import os
 import asyncio
-from gpt_migrate.utils.cfg import Config
+from debtrazor.utils.cfg import Config
 from langchain.globals import set_verbose
-from gpt_migrate.utils.logging import add_to_log_queue, logger
-from gpt_migrate.utils.util import read_gitignore
+from debtrazor.utils.logging import add_to_log_queue, logger
+from debtrazor.utils.util import read_gitignore
 from langgraph.checkpoint.sqlite import SqliteSaver
 
 
