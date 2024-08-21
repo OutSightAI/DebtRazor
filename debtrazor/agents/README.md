@@ -47,10 +47,6 @@ This file defines a `TypedDict` class named `AgentState` that represents the sta
 
 **Internal Dependencies:** None
 
-## Getting Started
-
-To get started with the `agents` module, you can initialize the `Agent` class or any of its derived classes and use their methods to perform various tasks. For documentation purposes, you can use the `DocAgent` class from the `doc_agent` submodule to process and document your code directories and files. Make sure to configure the necessary models and tools as per your requirements.
-
 ## Contributing
 
 We welcome contributions to improve the `agents` module. Please ensure that your code is well-documented and includes appropriate tests. For major changes, please open an issue first to discuss what you would like to change.
