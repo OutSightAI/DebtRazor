@@ -54,29 +54,6 @@ The code ensures proper directory permissions, sets verbosity levels, and reads 
 - `../utils/logging.py`
 - `../utils/util.py`
 
-## Getting Started
-
-1. **Clone the Repository:**
-   ```bash
-   git clone <repository-url>
-   cd migrate_utils
-   ```
-
-2. **Install Dependencies:**
-   Ensure you have all the necessary dependencies installed. You can use `pip` to install them:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the Documentation Agent:**
-   You can start the documentation process by running the `run_doc_agent.py` script:
-   ```bash
-   python run_doc_agent.py
-   ```
-
-4. **Explore Other Utilities:**
-   Check out the other scripts and modules to understand their functionalities and how they can assist in your migration and documentation tasks.
-
 ## Contributing
 
 We welcome contributions! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
