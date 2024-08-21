@@ -100,7 +100,7 @@ The `utils` directory contains various utility modules that provide essential fu
 3. **Run the Main Script:**
    You can start the migration process by running the `main.py` script:
    ```bash
-   python main.py
+   python debtrazor/main.py configs/config.yaml
    ```
 
 4. **Explore Other Modules:**
