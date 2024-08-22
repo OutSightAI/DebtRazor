@@ -33,22 +33,6 @@ The function returns the result of the tool's function if a matching tool is fou
 - `utils.py`: Contains utility functions used across the `dependency_tree` module.
 - `README.md`: Provides an overview of the `dependency_tree` module, explaining its purpose and summarizing the contents of each file and module.
 
-## Getting Started
-
-To get started with the `tools` module, follow these steps:
-
-1. **Install Dependencies:** Ensure you have all the required dependencies installed. For Python dependencies, you can use:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-2. **Configure Settings:** Customize the settings in the respective configuration files (`config.py` in `dependency_tree` module) as per your project requirements.
-
-3. **Utilize Tools:**
-    - **Execute Tool:** Use the `execute_tool` function in `utils.py` to process and execute tool calls.
-    - **Generate Dependency Trees:** Use the `tree` module to generate internal dependency trees for Python and Node.js projects.
-    - **Manage Dependencies:** Use the `dependency_tree` module to parse, visualize, and analyze your project's dependencies.
-
 ## Contributing
 
 We welcome contributions to the `tools` module. If you have any suggestions, bug reports, or feature requests, please open an issue or submit a pull request.
