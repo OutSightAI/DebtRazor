@@ -4,6 +4,7 @@
 
 Lets cleanse the world of tech debt, one repo at a time.
 
+Demo: https://youtu.be/miZnZOtuTvk
 
 ## Getting Started
 
