@@ -1,6 +1,51 @@
-# debtrazor
+# Debtrazor
 
-Welcome to the `debtrazor` project! This repository contains various modules and utilities designed to facilitate code migration, documentation generation, and dependency management. Below is an overview of the key directories and files within this project to help you get started quickly.
+![alt text](./debtrazor/assets/debtrazor.webp)
+
+Lets cleanse the world of tech debt, one repo at a time.
+
+
+## Getting Started
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/OutSightAI/DebtRazor
+   cd debtrazor
+   ```
+
+2. **Install Dependencies:**
+   Ensure you have all the necessary dependencies installed. You can use `pip` to install them:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Run the Main Script:**
+   - Create a virtual environment and activate it: (optional)
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+   - Export the PYTHONPATH environment variable to include the project directory:
+   ```bash
+   export PYTHONPATH=$(pwd)
+   ```
+
+   - Modify the `configs/config.yaml` file 
+   ```yaml
+   entry_path: "/path/to/project"
+   output_path: "./path/to/output"
+   ```
+
+   - You can now start the migration process by running the `main.py` script:
+   ```bash
+   python main.py
+   ```
+
+(Note: All of this project was documented by DebtRazor itself, with minimal human edits.)
+
+## Overview
+This repository contains various modules and utilities designed to facilitate code migration, documentation generation, and dependency management. Below is an overview of the key directories and files within this project to help you get started quickly.
 
 ## Directory Structure
 
@@ -82,29 +127,6 @@ The `utils` directory contains various utility modules that provide essential fu
 - `tree.py`: Generates a visual tree structure of a directory.
 - `load.py`: Handles the loading, parsing, and validation of configuration data from a YAML file.
 - `cfg.py`: Defines a `Config` class for configuration management.
-
-## Getting Started
-
-1. **Clone the Repository:**
-   ```bash
-   git clone <repository-url>
-   cd debtrazor
-   ```
-
-2. **Install Dependencies:**
-   Ensure you have all the necessary dependencies installed. You can use `pip` to install them:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Run the Main Script:**
-   You can start the migration process by running the `main.py` script:
-   ```bash
-   python debtrazor/main.py configs/config.yaml
-   ```
-
-4. **Explore Other Modules:**
-   Check out the other directories and modules to understand their functionalities and how they can assist in your tasks.
 
 ## Contributing
 

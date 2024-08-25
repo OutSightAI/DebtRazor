@@ -9,6 +9,9 @@ legacy_framework: flask # change this
 new_language: rust # change this (comming soon!)
 new_framework: actix web # change this (comming soon!)
 
+langchain_tracing: false
+langchain_verbose: false
+
 thread_id: 0001 # This is required for the frontend (comming soon!)
 
 document: 
