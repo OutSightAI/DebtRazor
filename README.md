@@ -1,12 +1,9 @@
 # Debtrazor
 
-![alt text](./debtrazor/assets/debtrazor.webp)
+## Demo (click image to watch)
+[![Demo](./debtrazor/assets/debtrazor.webp)](https://www.youtube.com/watch?v=miZnZOtuTvk "Demo") 
 
 Lets cleanse the world of tech debt, one repo at a time.
-
-
-## Demo
-[![Demo](https://img.youtube.com/vi/miZnZOtuTvk/0.jpg)](https://www.youtube.com/watch?v=miZnZOtuTvk "Demo")
 
 
 ## Getting Started
