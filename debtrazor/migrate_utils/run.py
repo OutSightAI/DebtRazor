@@ -1,9 +1,12 @@
 import asyncio
-from debtrazor.migrate_utils.llm import get_llm
-from debtrazor.utils.logging import add_to_log_queue, logger
-from debtrazor.agents.doc_agent.agent import DocAgent
-from debtrazor.tools.tree.node_js import madge
 from debtrazor.tools.tree.python import pydeps
+from debtrazor.tools.tree.node_js import madge
+from debtrazor.migrate_utils.llm import get_llm
+from debtrazor.agents.doc_agent.agent import DocAgent
+from debtrazor.utils.logging import add_to_log_queue, logger
+from debtrazor.agents.planner_agent.agent import PlannerAgent
+from debtrazor.agents.dir_struct_agent.agent import DirStructAgent
+from langchain_community.tools.file_management.read import ReadFileTool
 
 
 async def run_documentation_agent(
@@ -71,4 +74,58 @@ async def run_documentation_agent(
         result = current_state
 
     logger.info("DocAgent Result: %s", result)
+    return result
+
+
+def run_dir_struct_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
+    dir_struct_model = get_llm(cfg.dir_struct.model)
+    dir_struct_agent = DirStructAgent(
+        dir_struct_model, [ReadFileTool()], checkpointer=memory, thread_id=str(cfg.thread_id)
+    )
+    
+    should_call_dir_struct_agent = False
+    current_state = dir_struct_agent.graph.get_state(dir_struct_agent.config)
+    
+    # Determine if the agent is running for the first time
+    if current_state.created_at is None or len(current_state.values["messages"]) == 0:  # Agent is running for the first time
+        current_state = init_state
+        should_call_dir_struct_agent = True
+    else: 
+        current_state = current_state.values
+    logger.info("Updated Current State: %s", current_state)
+
+    if should_call_dir_struct_agent:
+        logger.info("Calling dir struct Agent")
+        result = dir_struct_agent(current_state)
+    else: 
+        result = current_state
+    
+    logger.info("DirStructAgent Result: %s", result)
+    return result
+
+
+def run_planner_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
+    planner_model = get_llm(cfg.planner.model)
+    planner_agent = PlannerAgent(
+        planner_model, [ReadFileTool()], checkpointer=memory, thread_id=str(cfg.thread_id)
+    )
+    
+    should_call_planner_agent = False
+    current_state = planner_agent.graph.get_state(planner_agent.config)
+    
+    # Determine if the agent is running for the first time
+    if current_state.created_at is None or len(current_state.values["messages"]) == 0:  # Agent is running for the first time
+        current_state = init_state
+        should_call_planner_agent = True
+    else: 
+        current_state = current_state.values
+    logger.info("Updated Current State: %s", current_state)
+
+    if should_call_planner_agent:
+        logger.info("Calling planner Agent")
+        result = planner_agent(current_state)
+    else: 
+        result = current_state
+    
+    logger.info("PlannerAgent Result: %s", result)
     return result

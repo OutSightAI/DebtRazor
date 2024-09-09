@@ -1,10 +1,12 @@
 import os
+import sqlite3
 import asyncio
 from debtrazor.utils.cfg import Config
 from langchain.globals import set_verbose
-from debtrazor.utils.logging import add_to_log_queue, logger
 from debtrazor.utils.util import read_gitignore
 from langgraph.checkpoint.sqlite import SqliteSaver
+from debtrazor.utils.logging import add_to_log_queue, logger
+from debtrazor.agents.dir_struct_agent.prompts import DIR_STRUCT_PLAN_HUMAN_PROMPT
 
 
 def setup_langchain_tracing(cfg: Config) -> None:
@@ -66,7 +68,12 @@ def setup_memory(cfg):
     """
     db_path = os.path.join(cfg.output_path, "checkpoint.db")
     logger.info("Database path: %s", db_path)
-    memory = SqliteSaver.from_conn_string(db_path)
+    
+    # memory = SqliteSaver.from_conn_string(db_path)
+    
+    connection = sqlite3.connect(db_path, check_same_thread=False)
+    memory = SqliteSaver(connection)
+    
     return memory
 
 
@@ -90,5 +97,57 @@ def setup_initial_state(cfg):
         "ignore_list": read_gitignore(cfg.entry_path),
         "directory_structure": "",
         "indent": "",
+        "current_path": None, 
+        "items_to_process": [],
     }
     return init_state
+
+def setup_initial_dir_struct_state(cfg, **kwargs): 
+    try: 
+        documented_code_path = kwargs["documented_code_path"]
+        legacy_directory_structure = kwargs["legacy_directory_structure"]
+    except KeyError:
+        raise KeyError("documented_code_path and legacy_dircectory_structure must be provided in kwargs")
+
+    init_dir_struct_state = {
+        "entry_path": documented_code_path,
+        "legacy_directory_structure": legacy_directory_structure,
+        "legacy_language": cfg.legacy_language,
+        "legacy_framework": cfg.legacy_framework, 
+        "new_language": cfg.new_language,
+        "new_framework": cfg.new_framework,
+        "messages": [
+            DIR_STRUCT_PLAN_HUMAN_PROMPT.format(
+                directory_tree_structure=legacy_directory_structure,
+                legacy_language=cfg.legacy_language, 
+                legacy_framework=cfg.legacy_framework
+            )
+        ]
+    }
+    return init_dir_struct_state
+
+
+def setup_initial_planner_state(cfg, **kwargs): 
+    try:
+        documented_code_path = kwargs["documented_code_path"]
+        new_directory_structure = kwargs["new_directory_structure"]
+        legacy_directory_structure = kwargs["legacy_directory_structure"]
+        files_to_migrate = kwargs["files_to_migrate"]
+        dependencies_per_file = kwargs["dependencies_per_file"]
+    except KeyError:
+        raise KeyError("new_directory_structure, documented_code_path, legacy_directory_structure, files_to_migrate, and dependencies_per_file must be provided in kwargs")
+    
+    init_planner_state = {
+        "entry_path": documented_code_path,
+        "legacy_language": cfg.legacy_language,
+        "legacy_framework": cfg.legacy_framework,
+        "new_language": cfg.new_language,
+        "new_framework": cfg.new_framework,
+        "new_directory_structure": new_directory_structure,
+        "legacy_directory_structure": legacy_directory_structure,
+        "files_to_migrate": files_to_migrate,
+        "dependencies_per_file": dependencies_per_file, 
+        "unstructured_migration_plan": "",
+    }
+    
+    return init_planner_state

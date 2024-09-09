@@ -16,4 +16,12 @@ thread_id: 0001 # This is required for the frontend (comming soon!)
 
 document: 
   model: 
+    name: gpt-4o-mini
+
+dir_struct: 
+  model: 
     name: gpt-4o
+
+planner: 
+  model: 
+    name: gpt-4o-mini

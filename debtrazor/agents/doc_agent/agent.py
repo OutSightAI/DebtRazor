@@ -48,7 +48,7 @@ class DocAgent(Agent):
         )
 
         # creating Agent graph
-        logger.info("Creating Agent Graph")
+        logger.info("Creating Doc Agent Graph")
         graph = StateGraph(DocAgentState)
 
         # Adding nodes
@@ -84,7 +84,7 @@ class DocAgent(Agent):
         )
         logger.info("Conditional Edges: directory_processor")
         # compiling graph
-        self.graph = graph.compile(checkpointer=checkpointer.__enter__())
+        self.graph = graph.compile(checkpointer=checkpointer)
 
     def __call__(self, state: DocAgentState):
         """
