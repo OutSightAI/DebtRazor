@@ -85,3 +85,16 @@ def get_relative_path(path, entry_path):
         if relative_path[0] == "/":  # Remove leading slash if present
             relative_path = relative_path[1:]
     return relative_path
+
+def filter_dict_by_keys(input_dict:dict, allowed_keys: list):
+    """
+    Filter a dictionary by a list of keys.
+
+    Args:
+        input_dict (dict): The input dictionary to filter.
+        keys (list): A list of keys to keep in the dictionary.
+
+    Returns:
+        dict: The filtered dictionary.
+    """
+    return dict(filter(lambda item: item[0] in allowed_keys, input_dict.items()))

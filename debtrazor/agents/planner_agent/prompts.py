@@ -59,7 +59,8 @@ I REPEAT NO CIRCULAR DEPENDENCIES IN THE PLAN ESPECIALLY FOR NEW CONTEXT FILES!!
 IMPORANT!!!! IF THE PLAN YOU CREATE IS A GREAT PLAN THAT MIGRATES THE CODEBASE SUCCESSFULLY I WILL TIP YOU $1 MILLION IN GOOGLE STOCKS. 
 """
 
-
+# TODO: Remove the in line example and hopefully we can pick more examples that matches the directory structures so that model has higher chance of 
+# creating better plans.  
 PLANNER_PROMPT = ChatPromptTemplate([
     ("system", PLANNER_SYSTEM_PROMPT),
     ("human", """I want you think about the migration plan first before starting to write down the final plan. Lets do this exercise for few files: 

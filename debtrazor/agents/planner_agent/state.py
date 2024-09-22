@@ -1,5 +1,6 @@
-from debtrazor.agents.state import AgentState
 from typing import List, Any
+from debtrazor.agents.state import AgentState
+from debtrazor.schema.migrate import MigrationPlan
 
 
 class PlannerAgentState(AgentState):
@@ -13,3 +14,4 @@ class PlannerAgentState(AgentState):
     dependencies_per_file: dict[str, Any]
     files_to_migrate: List[str]
     unstructured_migration_plan: str
+    structured_migration_plan: MigrationPlan

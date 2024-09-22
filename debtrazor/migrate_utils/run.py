@@ -6,6 +6,7 @@ from debtrazor.agents.doc_agent.agent import DocAgent
 from debtrazor.utils.logging import add_to_log_queue, logger
 from debtrazor.agents.planner_agent.agent import PlannerAgent
 from debtrazor.agents.dir_struct_agent.agent import DirStructAgent
+from debtrazor.agents.migrate_agent.agent import MigrateAgent
 from langchain_community.tools.file_management.read import ReadFileTool
 
 
@@ -107,14 +108,14 @@ def run_dir_struct_agent(init_state, memory, cfg, log_queue: asyncio.Queue | Non
 def run_planner_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
     planner_model = get_llm(cfg.planner.model)
     planner_agent = PlannerAgent(
-        planner_model, [ReadFileTool()], checkpointer=memory, thread_id=str(cfg.thread_id)
+        planner_model, [], checkpointer=memory, thread_id=str(cfg.thread_id)
     )
     
     should_call_planner_agent = False
     current_state = planner_agent.graph.get_state(planner_agent.config)
     
     # Determine if the agent is running for the first time
-    if current_state.created_at is None or len(current_state.values["messages"]) == 0:  # Agent is running for the first time
+    if current_state.created_at is None or current_state.values["structured_migration_plan"] is None:  # Agent is running for the first time
         current_state = init_state
         should_call_planner_agent = True
     else: 
@@ -129,3 +130,18 @@ def run_planner_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None =
     
     logger.info("PlannerAgent Result: %s", result)
     return result
+
+
+def run_migrate_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
+    migrate_model = get_llm(cfg.migrate.model)
+    
+    migrate_agent = MigrateAgent(
+        migrate_model, [ReadFileTool()], checkpointer=memory, thread_id=str(cfg.thread_id)
+    )
+    init_state, structured_migration_plan = init_state
+
+    for i in range(len(structured_migration_plan.steps)):
+        init_state["file_to_migrate"] = structured_migration_plan.steps[i]
+        logger.info("Calling migrate Agent for file %s", structured_migration_plan.steps[i].file_name)
+        migrate_agent(init_state)
+    

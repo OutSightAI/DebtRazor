@@ -148,6 +148,26 @@ def setup_initial_planner_state(cfg, **kwargs):
         "files_to_migrate": files_to_migrate,
         "dependencies_per_file": dependencies_per_file, 
         "unstructured_migration_plan": "",
+        "structured_migration_plan": None
     }
     
     return init_planner_state
+
+
+def setup_initial_migrate_state(cfg, **kwargs): 
+    try:
+        documented_code_path = kwargs["documented_code_path"]
+        new_directory_structure = kwargs["new_directory_structure"]
+        structured_migration_plan = kwargs["structured_migration_plan"]
+    except KeyError:
+        raise KeyError("new_directory_structure, structured_migration_plan, and documented_code_path must be provided in kwargs")
+    
+    init_migrate_state = {
+        "entry_path": documented_code_path,
+        "output_path": os.path.join(os.path.dirname(cfg.output_path), "target"),
+        "legacy_language": cfg.legacy_language,
+        "new_language": cfg.new_language,
+        "new_directory_structure": new_directory_structure,
+    }
+    
+    return init_migrate_state, structured_migration_plan

@@ -1,6 +1,7 @@
 from debtrazor.utils.load import load_and_validate_config
+from debtrazor.utils.util import filter_dict_by_keys
 
-__all__ = ["load_and_validate_config"]
+__all__ = ["load_and_validate_config", "filter_dict_by_keys"]
 
 # The above import statement brings in the `load_and_validate_config` function from the `debtrazor.utils.load` module.
 # This function is likely responsible for loading and validating configuration files.
