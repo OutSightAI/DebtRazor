@@ -32,7 +32,8 @@ async def run_documentation_agent(
     """
 
     # Initialize the documentation model and agent
-    doc_model = get_llm(cfg.document.model)
+    doc_model = get_llm(cfg.document.model, llm_yaml_path=cfg.llm_yaml_path if hasattr(cfg, "llm_yaml_path") else None)
+    
     doc_agent = DocAgent(
         doc_model, [madge, pydeps], checkpointer=memory, thread_id=str(cfg.thread_id)
     )
@@ -79,7 +80,7 @@ async def run_documentation_agent(
 
 
 def run_dir_struct_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
-    dir_struct_model = get_llm(cfg.dir_struct.model)
+    dir_struct_model = get_llm(cfg.dir_struct.model, llm_yaml_path=cfg.llm_yaml_path if hasattr(cfg, "llm_yaml_path") else None)
     dir_struct_agent = DirStructAgent(
         dir_struct_model, [ReadFileTool()], checkpointer=memory, thread_id=str(cfg.thread_id)
     )
@@ -106,7 +107,7 @@ def run_dir_struct_agent(init_state, memory, cfg, log_queue: asyncio.Queue | Non
 
 
 def run_planner_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
-    planner_model = get_llm(cfg.planner.model)
+    planner_model = get_llm(cfg.planner.model, llm_yaml_path=cfg.llm_yaml_path if hasattr(cfg, "llm_yaml_path") else None)
     planner_agent = PlannerAgent(
         planner_model, [], checkpointer=memory, thread_id=str(cfg.thread_id)
     )
@@ -133,7 +134,7 @@ def run_planner_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None =
 
 
 def run_migrate_agent(init_state, memory, cfg, log_queue: asyncio.Queue | None = None):
-    migrate_model = get_llm(cfg.migrate.model)
+    migrate_model = get_llm(cfg.migrate.model, llm_yaml_path=cfg.llm_yaml_path if hasattr(cfg, "llm_yaml_path") else None)
     
     migrate_agent = MigrateAgent(
         migrate_model, [ReadFileTool()], checkpointer=memory, thread_id=str(cfg.thread_id)

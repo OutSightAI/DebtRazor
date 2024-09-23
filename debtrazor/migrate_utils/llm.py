@@ -8,7 +8,7 @@ ROOT_DIR = os.path.dirname(PACKAGE_DIR)
 CONFIG_DIR = os.path.join(ROOT_DIR, "configs")
 
 
-def get_llm(model_params):
+def get_llm(model_params, llm_yaml_path=None):
     """
     Retrieves a language model (LLM) based on the provided model parameters.
 
@@ -29,7 +29,9 @@ def get_llm(model_params):
     name = model_params["name"]
 
     # Load the LLM configuration from the llm.yaml file
-    llm_yaml_path = os.path.join(CONFIG_DIR, "llm.yaml")
+    if llm_yaml_path is None:
+        llm_yaml_path = os.path.join(CONFIG_DIR, "llm.yaml")
+    
     with open(llm_yaml_path, "r") as fp:
         llm_yaml = yaml.safe_load(fp)
 
