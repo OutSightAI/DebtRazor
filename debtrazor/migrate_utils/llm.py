@@ -15,6 +15,8 @@ def get_llm(model_params, llm_yaml_path=None):
     Args:
         model_params (object): An object containing model parameters.
                                The object should have a 'name' attribute.
+        llm_yaml_path (str, optional): The path to the llm.yaml configuration file.
+                                       Defaults to None.
 
     Returns:
         ChatOpenAI: An instance of the ChatOpenAI class configured with the specified model.
