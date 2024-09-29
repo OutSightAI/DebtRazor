@@ -71,12 +71,12 @@ class MigrateAgent(Agent):
         self.graph = graph.compile(checkpointer=checkpointer)
 
     def __call__(self, state: MigrateAgentState):
-        return self.graph.invoke(state, config=self.config)
+        return self.graph.ainvoke(state, config=self.config)
     
-    def file_migration_planner_node(self, state: MigrateAgentState):
+    async def file_migration_planner_node(self, state: MigrateAgentState):
         logger.info("on node: migration_file_planner")
         
-        response = self.file_migration_planner_chain.invoke({
+        response = await self.file_migration_planner_chain.ainvoke({
             "legacy_language": state["legacy_language"],
             "new_language": state["new_language"],
             "new_directory_structure": state["new_directory_structure"],
@@ -90,12 +90,12 @@ class MigrateAgent(Agent):
             "current_plan": response.content
         }
     
-    def file_migration_node(self, state: MigrateAgentState):
+    async def file_migration_node(self, state: MigrateAgentState):
         logger.info("on node: migrate")
         
         last_message_with_end_index = next((i for i in range(len(state["messages"]) - 1, -1, -1) if "END" in state["messages"][i].content), -1)
 
-        response = self.file_migration_chain.invoke({
+        response = await self.file_migration_chain.ainvoke({
             "legacy_language": state["legacy_language"],
             "new_language": state["new_language"],
             "input_directory_path": state["entry_path"],
@@ -111,9 +111,9 @@ class MigrateAgent(Agent):
             "messages": [response]
         }
         
-    def write_file_node(self, state: MigrateAgentState):
+    async def write_file_node(self, state: MigrateAgentState):
         logger.info("on node: write_file_node")
-        response = self.writer_chain.invoke({      
+        response = await self.writer_chain.ainvoke({      
             "new_language": state["new_language"],
             "output_directory_path": state["output_path"],
             "file_to_migrate": state["file_to_migrate"].file_name,

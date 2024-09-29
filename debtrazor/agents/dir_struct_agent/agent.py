@@ -54,11 +54,11 @@ class DirStructAgent(Agent):
         self.graph = graph.compile(checkpointer=checkpointer)
     
     def __call__(self, state: DirStructAgentState):
-        return self.graph.invoke(state, config=self.config)
+        return self.graph.ainvoke(state, config=self.config)
     
-    def dir_struct_node(self, state: DirStructAgentState):
+    async def dir_struct_node(self, state: DirStructAgentState):
         logger.info("on node: dir_struct_node")
-        response = self.dir_struct_chain.invoke({
+        response = await self.dir_struct_chain.ainvoke({
             "legacy_language": state["legacy_language"], 
             "legacy_framework": state["legacy_framework"],
             "new_language": state["new_language"],
@@ -76,9 +76,9 @@ class DirStructAgent(Agent):
         else:
             return False
         
-    def critique_node(self, state: DirStructAgentState): 
+    async def critique_node(self, state: DirStructAgentState): 
         logger.info("on node: critique_node")
-        response = self.dir_struct_expert_critique.invoke({
+        response = await self.dir_struct_expert_critique.ainvoke({
             "new_language": state["new_language"], 
             "new_framework": state["new_framework"], 
             "final_directory_structure": [state["messages"][-1]]
@@ -90,10 +90,10 @@ class DirStructAgent(Agent):
             return False
         return True
     
-    def extract_files_to_migrate(self, state: DirStructAgentState): 
+    async def extract_files_to_migrate(self, state: DirStructAgentState): 
         logger.info("on node: extract_file_to_migrate_node")
         
-        response = self.extract_files_chain.invoke({
+        response = await self.extract_files_chain.ainvoke({
             "new_language": state["new_language"], 
             "new_framework": state["new_framework"],
             "new_directory_structure": state["messages"][-2].content

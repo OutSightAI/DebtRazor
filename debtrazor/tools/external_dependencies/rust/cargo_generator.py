@@ -1,5 +1,15 @@
 import os
 import re
+import aiofiles
+from typing import List
+from langchain.tools import tool
+from langchain.prompts import ChatPromptTemplate
+from debtrazor.utils.util import filter_dict_by_keys, parse_code_string
+
+from langchain_core.language_models import BaseChatModel
+
+
+
 
 def extract_use_statements(file_path):
     """
@@ -41,3 +51,34 @@ def extract_all_dependencies(directory_path: str) -> dict[str, list[str]]:
     
     return result
 
+async def generate_cargo_toml(
+    directory_path: str, 
+    migrated_files: List[str], 
+    output_path: str, 
+    llm: BaseChatModel,
+) -> str: 
+    
+    use_statements = extract_all_dependencies(directory_path)
+    use_statements = filter_dict_by_keys(use_statements, migrated_files)
+
+    # Generate the Cargo.toml file
+    system_prompt = """You are a helpful assistant that generates Cargo.toml files for Rust projects. 
+                        Keep your answer restricted to the cargo.toml file and no extra comments or 
+                        additional verbosity."""    
+    human_prompt = """Given the following use statements from Rust files:\n\n{use_statements}
+                        \n\nGenerate a Cargo.toml file that includes the necessary dependencies."""
+    
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            ("human", human_prompt)
+        ]
+    )
+
+    chain = prompt | llm
+    cargo_toml_content = await chain.ainvoke({"use_statements": use_statements})
+ 
+    async with aiofiles.open(os.path.join(output_path, "Cargo.toml"), 'w') as f:
+        await f.write(parse_code_string(cargo_toml_content.content))
+
+    return os.path.join(output_path, "Cargo.toml")

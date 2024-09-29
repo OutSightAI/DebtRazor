@@ -96,7 +96,7 @@ class DocAgent(Agent):
         Returns:
             The result of the graph execution.
         """
-        return self.graph.stream(state, config=self.config)
+        return self.graph.astream(state, config=self.config)
 
     def process_directory_or_file(self, state: DocAgentState):
         """
@@ -245,7 +245,7 @@ class DocAgent(Agent):
         else:
             return {"current_path": None}
 
-    def document_file_node(self, state: DocAgentState):
+    async def document_file_node(self, state: DocAgentState):
         """
         Process the document file node in the state graph.
 
@@ -275,14 +275,15 @@ class DocAgent(Agent):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         if not os.path.exists(os.path.join(output_path, state["current_path"])):
-            doc_commented_code_file = parse_code_string(
-                self.doc_chain.invoke(
+            response = await self.doc_chain.ainvoke(
                     {
                         "language": state["legacy_language"],
                         "framework": state["legacy_framework"],
                         "code_file": code_file,
                     }
-                ).content
+            )
+            doc_commented_code_file = parse_code_string(
+                response.content
             )
 
             try:
@@ -296,7 +297,7 @@ class DocAgent(Agent):
             # pass doc_commented_code_file to the model again with the
             # summary chain to create a summary of the file and write the
             # summary along with the path to the messages in state
-            code_file_summary = self.summary_chain.invoke(
+            code_file_summary = await self.summary_chain.ainvoke(
                 {
                     "language": state["legacy_language"],
                     "framework": state["legacy_framework"],
@@ -309,7 +310,7 @@ class DocAgent(Agent):
             code_file_summary.additional_kwargs["file_name"] = state["current_path"]
             message = code_file_summary
 
-            dependency_tree = self.dependency_tree_chain.invoke(
+            dependency_tree = await self.dependency_tree_chain.ainvoke(
                 {
                     "language": state["legacy_language"],
                     "framework": state["legacy_framework"],
@@ -318,8 +319,6 @@ class DocAgent(Agent):
                     ),
                 }
             )
-
-            # from pdb import set_trace; set_trace()
 
             if hasattr(dependency_tree, "dependencies"):
                 if (
@@ -354,7 +353,7 @@ class DocAgent(Agent):
             "dependencies_per_file": dependencies_per_file,
         }
 
-    def readme_creator_node(self, state: DocAgentState):
+    async def readme_creator_node(self, state: DocAgentState):
         """
         Process the README creator node in the state graph.
 
@@ -391,7 +390,7 @@ class DocAgent(Agent):
 
         file_or_module_summaries = "\n\n".join(file_or_module_summaries)
 
-        readme = self.readme_chain.invoke(
+        readme = await self.readme_chain.ainvoke(
             {
                 "file_module_summaries": file_or_module_summaries,
                 "module_name": os.path.basename(relative_path),
@@ -421,8 +420,6 @@ class DocAgent(Agent):
             readme.additional_kwargs["directory_path"] = state["entry_path"]
             readme.additional_kwargs["file_name"] = "README.md"
 
-        # from pdb import set_trace; set_trace()
-
         if len(state["items_to_process"]) == 0:
             state["directory_structure"] += state["indent"] + "└── README.md\n"
             state["indent"] = state["indent"][:-4]
@@ -444,7 +441,7 @@ class DocAgent(Agent):
             events: The events to be streamed.
             log_queue: The log queue to add the events to.
         """
-        for event in events:
+        async for event in events:
             # TODO: fix the logging here for showing information on the frontend
             if "document_file" in event.keys():
                 await add_to_log_queue(

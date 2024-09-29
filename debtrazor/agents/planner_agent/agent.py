@@ -44,18 +44,18 @@ class PlannerAgent(Agent):
         self.graph = graph.compile(checkpointer=checkpointer)
 
     def __call__(self, state: PlannerAgentState):
-        return self.graph.invoke(state, config=self.config)
+        return self.graph.ainvoke(state, config=self.config)
     
-    def planner_node(self, state: PlannerAgentState):
+    async def planner_node(self, state: PlannerAgentState):
         logger.info("on node: planner_node")
-        response = self.planner_chain.invoke({**state})
+        response = await self.planner_chain.ainvoke({**state})
         return {
             "unstructured_migration_plan": response.content
         }
     
-    def extract_structured_plan_node(self, state: PlannerAgentState):
+    async def extract_structured_plan_node(self, state: PlannerAgentState):
         logger.info("on node: extract_structured_plan")
-        response = self.extract_structured_plan_chain.invoke({
+        response = await self.extract_structured_plan_chain.ainvoke({
             "unstructured_migration_plan": state["unstructured_migration_plan"]
         })
         

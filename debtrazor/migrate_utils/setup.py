@@ -1,10 +1,13 @@
 import os
-import sqlite3
+# import sqlite3
 import asyncio
+# import aiosqlite
 from debtrazor.utils.cfg import Config
+# from contextlib import asynccontextmanager
 from langchain.globals import set_verbose
 from debtrazor.utils.util import read_gitignore
-from langgraph.checkpoint.sqlite import SqliteSaver
+# from langgraph.checkpoint.sqlite import SqliteSaver
+# from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from debtrazor.utils.logging import add_to_log_queue, logger
 from debtrazor.agents.dir_struct_agent.prompts import DIR_STRUCT_PLAN_HUMAN_PROMPT
 
@@ -56,26 +59,38 @@ async def setup_environment(cfg, log_queue: asyncio.Queue | None = None):
     setup_langchain_tracing(cfg)  # Setup langchain tracing
 
 
-def setup_memory(cfg):
-    """
-    Setup memory using SqliteSaver.
+# def setup_memory(cfg):
+#     """
+#     Setup memory using SqliteSaver.
 
-    Args:
-        cfg (Config): Configuration object containing memory settings.
+#     Args:
+#         cfg (Config): Configuration object containing memory settings.
 
-    Returns:
-        SqliteSaver: An instance of SqliteSaver initialized with the database path.
-    """
-    db_path = os.path.join(cfg.output_path, "checkpoint.db")
-    logger.info("Database path: %s", db_path)
+#     Returns:
+#         SqliteSaver: An instance of SqliteSaver initialized with the database path.
+#     """
+#     db_path = os.path.join(cfg.output_path, "checkpoint.db")
+#     logger.info("Database path: %s", db_path)
     
-    # memory = SqliteSaver.from_conn_string(db_path)
+#     #connection = sqlite3.connect(db_path, check_same_thread=False)
+#     #memory = SqliteSaver(connection)
     
-    connection = sqlite3.connect(db_path, check_same_thread=False)
-    memory = SqliteSaver(connection)
-    
-    return memory
+#     connection = aiosqlite.connect(db_path)
+#     memory = AsyncSqliteSaver(connection)
 
+#     return memory
+
+# async def setup_memory(cfg):
+#     db_path = os.path.join(cfg.output_path, "checkpoint.db")
+#     logger.info("Database path: %s", db_path)
+
+#     @asynccontextmanager
+#     async def get_memory():
+#         async with aiosqlite.connect(db_path) as conn:
+#             memory = AsyncSqliteSaver(conn)
+#             yield memory
+
+#     return get_memory
 
 def setup_initial_state(cfg):
     """
@@ -91,7 +106,7 @@ def setup_initial_state(cfg):
         "entry_path": cfg.entry_path,
         "directory_stack": [{"path": cfg.entry_path, "count": -1}],
         "dependencies_per_file": {},
-        "output_path": cfg.output_path,
+        "output_path": os.path.join(cfg.output_path, cfg.legacy_language),
         "legacy_language": cfg.legacy_language,
         "legacy_framework": cfg.legacy_framework,
         "ignore_list": read_gitignore(cfg.entry_path),
@@ -164,7 +179,7 @@ def setup_initial_migrate_state(cfg, **kwargs):
     
     init_migrate_state = {
         "entry_path": documented_code_path,
-        "output_path": os.path.join(os.path.dirname(cfg.output_path), "target"),
+        "output_path": os.path.join(cfg.output_path, cfg.new_language),
         "legacy_language": cfg.legacy_language,
         "new_language": cfg.new_language,
         "new_directory_structure": new_directory_structure,
