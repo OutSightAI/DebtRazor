@@ -5,17 +5,6 @@ import filecmp
 import yaml
 from github import Github, GithubException
 
-# Define the Config class to match the YAML structure
-# class Config:
-#     def __init__(self, cfg_data):
-#         self.github_username = cfg_data['github_username']
-#         self.github_token = cfg_data['github_token']
-#         self.git_branch = cfg_data['git_branch']
-#         self.commit_message = cfg_data['commit_message']
-#         self.source_directory = cfg_data['source_directory']
-#         self.dest_directory = cfg_data['dest_directory']
-#         self.repo_name = cfg_data['repo_name']
-
 
 def load_config(config_path: str) -> dict:
     """
