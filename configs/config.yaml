@@ -1,5 +1,11 @@
 # Enter the directory path for the project you want to migrate and the output directory path
 
+github_username: "username"
+github_token: "token"
+git_branch: "migrated_code"
+repo_name: "repo_name"
+commit_message: "code migrated"
+
 entry_path: "/path/to/project"
 output_path: "./path/to/output"
 

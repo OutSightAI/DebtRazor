@@ -22,6 +22,17 @@ def load_config(config_path: str) -> dict[str, Any]:
         return yaml.safe_load(fp)
 
 
+# def parse_arguments() -> argparse.Namespace:
+#     """
+#     Parse and return command line arguments.
+
+#     Returns:
+#         argparse.Namespace: The parsed command line arguments.
+#     """
+#     parser = argparse.ArgumentParser(description="Process a configuration file")
+#     parser.add_argument("config_path", help="Path to config file")
+#     return parser.parse_args()
+
 def parse_arguments() -> argparse.Namespace:
     """
     Parse and return command line arguments.
@@ -31,7 +42,16 @@ def parse_arguments() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description="Process a configuration file")
     parser.add_argument("config_path", help="Path to config file")
+    
+    # Add --create-pull-request flag (defaults to False)
+    parser.add_argument(
+        "--create-pull-request", 
+        action="store_true", 
+        help="Flag to indicate if a pull request should be created. Default is False."
+    )
+    
     return parser.parse_args()
+
 
 
 async def load_and_validate_config(
