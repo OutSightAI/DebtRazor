@@ -7,3 +7,4 @@ python-dotenv
 langgraph-checkpoint-sqlite
 aiosqlite
 import_deps
+pygithub

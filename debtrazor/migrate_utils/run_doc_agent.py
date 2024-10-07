@@ -1,9 +1,10 @@
 import asyncio
 from debtrazor.migrate_utils.llm import get_llm
-from debtrazor.utils.logging import add_to_log_queue, logger
 from debtrazor.agents.doc_agent.agent import DocAgent
 from debtrazor.tools.tree.node_js import madge
 from debtrazor.tools.tree.python import pydeps
+from debtrazor.utils.logging import add_to_log_queue, logger
+from debtrazor.tools.git.git_commit import push_changes_to_github
 
 
 async def run_documentation_agent(
@@ -57,6 +58,20 @@ async def run_documentation_agent(
         events = doc_agent(current_state)
         await DocAgent.stream_events(events, log_queue)
         result = doc_agent.graph.get_state(doc_agent.config).values
+        if cfg.document.commit_to_git:
+            # Commit the documentation changes to the repository
+            await add_to_log_queue(
+                "Committing documentation changes to the repository", log_queue
+            )
+            push_changes_to_github(
+                cfg.entry_path, 
+                current_state["output_path"], 
+                cfg.github_token, 
+                cfg.github_username, 
+                cfg.repo_name, 
+                cfg.document.doc_branch_name, 
+                cfg.document.commit_message
+            )
     else:
         # Log that the documentation process is already complete
         await add_to_log_queue(

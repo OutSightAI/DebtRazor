@@ -84,11 +84,13 @@ def setup_initial_state(cfg):
         "entry_path": cfg.entry_path,
         "directory_stack": [{"path": cfg.entry_path, "count": -1}],
         "dependencies_per_file": {},
-        "output_path": cfg.output_path,
+        "output_path": os.path.join(cfg.output_path, cfg.legacy_language),
         "legacy_language": cfg.legacy_language,
         "legacy_framework": cfg.legacy_framework,
         "ignore_list": read_gitignore(cfg.entry_path),
         "directory_structure": "",
         "indent": "",
+        "current_path": None,
+        "items_to_process": [],
     }
     return init_state
