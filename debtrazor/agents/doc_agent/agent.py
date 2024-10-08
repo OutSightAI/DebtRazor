@@ -54,6 +54,7 @@ class DocAgent(Agent):
         # Adding nodes
         graph.add_node("start", self.start_node)
         graph.add_node("directory_processor", self.directory_processor_node)
+        graph.add_node("is_supported_code_file", self.is_supported_code_file_node)
         graph.add_node("document_file", self.document_file_node)
         graph.add_node("readme_creator", self.readme_creator_node)
 
@@ -66,11 +67,17 @@ class DocAgent(Agent):
             self.process_directory_or_file,
             {
                 "start": "start",
-                "document_file": "document_file",
+                "is_supported_code_file": "is_supported_code_file",
                 "readme_creator": "readme_creator",
                 "end": END,
             },
         )
+        graph.add_conditional_edges(
+            "is_supported_code_file",
+            self.continue_to_document_file_or_skip,
+            {"document_file": "document_file", "start": "start"},
+        )
+
         graph.add_conditional_edges(
             "document_file", self.should_continue, {"start": "start", "end": END}
         )
@@ -117,7 +124,7 @@ class DocAgent(Agent):
             ):
                 return "start"
             else:
-                return "document_file"
+                return "is_supported_code_file"
         if (
             (
                 state["current_path"] is None
@@ -245,6 +252,26 @@ class DocAgent(Agent):
         else:
             return {"current_path": None}
     
+    def is_supported_code_file_node(self, state: DocAgentState):
+        """
+        Process the supported code file node in the state graph.
+
+        Args:
+            state (DocAgentState): The current state of the agent.
+
+        Returns:
+            dict: The updated state.
+        """
+        logger.info("on node: is_supported_code_file_node")
+        if state["current_path"] is not None:
+            if state["current_path"].endswith(supported_langs[state["legacy_language"]]):
+                return {"document_or_skip_current_file": True}
+        return {"document_or_skip_current_file": False}
+    
+    def continue_to_document_file_or_skip(self, state: DocAgentState):
+        if state["document_or_skip_current_file"]:
+            return "document_file"
+        return "start"
     
     def document_file_node(self, state: DocAgentState):
         """
