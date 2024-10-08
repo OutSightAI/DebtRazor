@@ -2,8 +2,6 @@ import os
 import json
 from debtrazor.agents.agent import Agent
 from langgraph.graph import StateGraph, END
-from debtrazor.agents.doc_agent.state import DocAgentState
-from debtrazor.utils.util import is_ignored, parse_code_string, get_relative_path
 from debtrazor.agents.doc_agent.prompts import (
     PROMPT,
     PROMPT_SUMMARY,
@@ -11,8 +9,10 @@ from debtrazor.agents.doc_agent.prompts import (
     PROMPT_DEPENDENCY_TREE,
 )
 from debtrazor.tools.utils import execute_tool
+from debtrazor.agents.doc_agent.state import DocAgentState
 from debtrazor.utils.logging import logger, add_to_log_queue
-
+from debtrazor.constants import supported_langs, dependency_tool_supported_langs
+from debtrazor.utils.util import is_ignored, parse_code_string, get_relative_path
 
 class DocAgent(Agent):
     def __init__(self, model, tools, checkpointer=None, thread_id=None):
@@ -244,7 +244,8 @@ class DocAgent(Agent):
 
         else:
             return {"current_path": None}
-
+    
+    
     def document_file_node(self, state: DocAgentState):
         """
         Process the document file node in the state graph.
@@ -309,29 +310,28 @@ class DocAgent(Agent):
             code_file_summary.additional_kwargs["file_name"] = state["current_path"]
             message = code_file_summary
 
-            dependency_tree = self.dependency_tree_chain.invoke(
-                {
-                    "language": state["legacy_language"],
-                    "framework": state["legacy_framework"],
-                    "code_file_path": os.path.join(
-                        state["directory_stack"][-1]["path"], state["current_path"]
-                    ),
-                }
-            )
+            if state["legacy_language"] in dependency_tool_supported_langs:
+                dependency_tree = self.dependency_tree_chain.invoke(
+                    {
+                        "language": state["legacy_language"],
+                        "framework": state["legacy_framework"],
+                        "code_file_path": os.path.join(
+                            state["directory_stack"][-1]["path"], state["current_path"]
+                        ),
+                    }
+                )
 
-            # from pdb import set_trace; set_trace()
-
-            if hasattr(dependency_tree, "dependencies"):
-                if (
-                    len(dependency_tree.dependencies) > 0
-                ):  # Check if the list is not empty
-                    dependencies_str = json.dumps(dependency_tree.dependencies)
-                else:  # Handle the empty list case
-                    dependencies_str = json.dumps([])
-                message.content += f"""\nInternal Dependencies: {dependencies_str}"""
-            dependencies_per_file.update(
-                {dependency_tree.root: dependency_tree.dependencies}
-            )
+                if hasattr(dependency_tree, "dependencies"):
+                    if (
+                        len(dependency_tree.dependencies) > 0
+                    ):  # Check if the list is not empty
+                        dependencies_str = json.dumps(dependency_tree.dependencies)
+                    else:  # Handle the empty list case
+                        dependencies_str = json.dumps([])
+                    message.content += f"""\nInternal Dependencies: {dependencies_str}"""
+                dependencies_per_file.update(
+                    {dependency_tree.root: dependency_tree.dependencies}
+                )
 
         prefix = "├── " if state["directory_stack"][-1]["count"] >= 0 else "└── "
         state["directory_structure"] = (
@@ -420,8 +420,6 @@ class DocAgent(Agent):
         else:
             readme.additional_kwargs["directory_path"] = state["entry_path"]
             readme.additional_kwargs["file_name"] = "README.md"
-
-        # from pdb import set_trace; set_trace()
 
         if len(state["items_to_process"]) == 0:
             state["directory_structure"] += state["indent"] + "└── README.md\n"
