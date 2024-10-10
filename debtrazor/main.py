@@ -44,6 +44,10 @@ async def main():
     await run_documentation_agent(init_state, memory, cfg)
 
 
+def dbr():
+    _ = load_dotenv()  # Load environment variables from a .env file
+    asyncio.run(main())  # Run the main function using asyncio
+
 if __name__ == "__main__":
     _ = load_dotenv()  # Load environment variables from a .env file
     asyncio.run(main())  # Run the main function using asyncio

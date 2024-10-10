@@ -33,3 +33,4 @@ class DocAgentState(AgentState):
     legacy_language: str
     legacy_framework: str
     indent: str
+    document_or_skip_current_file: bool
