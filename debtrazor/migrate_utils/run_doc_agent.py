@@ -47,14 +47,11 @@ async def run_documentation_agent(
             current_state.get("items_to_process")
         )  # If there are items remaining to process i.e. agent ran partially
 
-    logger.info("Updated Current State: %s", current_state)
+    logger.debug("Updated Current State: %s", current_state)
 
     if should_call_doc_agent:
         # Log and call the DocAgent to document the repository
-        await add_to_log_queue(
-            "Calling Doc agent to Document the repository", log_queue
-        )
-        logger.info("Calling Doc Agent")
+        logger.info("Calling Doc agent to Document the repository")
         events = doc_agent(current_state)
         await DocAgent.stream_events(events, log_queue)
         result = doc_agent.graph.get_state(doc_agent.config).values

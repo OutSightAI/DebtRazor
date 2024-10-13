@@ -65,7 +65,7 @@ def setup_memory(cfg):
         SqliteSaver: An instance of SqliteSaver initialized with the database path.
     """
     db_path = os.path.join(cfg.output_path, "checkpoint.db")
-    logger.info("Database path: %s", db_path)
+    logger.info("Setting Up Long Term Memory\nCheckpointer DB Path: %s", db_path)
     memory = SqliteSaver.from_conn_string(db_path)
     return memory
 
