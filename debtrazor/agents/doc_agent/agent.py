@@ -1,5 +1,6 @@
 import os
 import json
+import asyncio
 from debtrazor.agents.agent import Agent
 from langgraph.graph import StateGraph, END
 from debtrazor.agents.doc_agent.prompts import (
@@ -238,6 +239,15 @@ class DocAgent(Agent):
             dict: The updated state.
         """
         logger.info("on node: director_processor_node")
+        if state["current_path"] is not None:
+            relative_path = get_relative_path(
+                state["directory_stack"][-1]["path"], state["entry_path"]
+            )
+
+            output_path = os.path.join(state["output_path"], relative_path) 
+            if not os.path.exists(os.path.join(output_path, state["current_path"])) and \
+                os.path.isfile(os.path.join(state["directory_stack"][-1]["path"], state["current_path"])):
+                return {"current_path": state["current_path"]}
         if state["items_to_process"]:
             while True:
                 state["directory_stack"][-1]["count"] -= 1  # Decrease count
@@ -461,7 +471,7 @@ class DocAgent(Agent):
         }
 
     @staticmethod
-    async def stream_events(events, log_queue):
+    async def stream_events(events, log_queue: asyncio.Queue | None = None):
         """
         Stream events and add them to the log queue.
 
